@@ -17,9 +17,6 @@ function App() {
   const [gameTurns, setGameTurns] = useState([]);
   const currentPlayer = deriveActivePlayer(gameTurns);
 
-  // BAD WAY TO UPDATE ARRAY
-  // IMMUTABILITY MATTERS - ALWAYS!
-  // let gameBoard = initialBoard;
   const gameBoard = deriveGameBoard(gameTurns);
 
   const winner = deriveWinner(gameBoard, players);

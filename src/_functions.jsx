@@ -4,6 +4,23 @@ import {
   WINNING_COMBINATIONS,
 } from "./_constants";
 
+export function deriveGameBoard(gameTurns) {
+  // WARNING IMMUTABILITY MATTERS - ALWAYS!
+  // la BAD way :
+  // let gameBoard = initialBoard;
+  // la GOOD WAY  :
+  let gameBoard = [...INITIAL_BOARD.map((arr) => [...arr])];
+
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+
+    gameBoard[row][col] = player;
+  }
+
+  return gameBoard;
+}
+
 export function deriveActivePlayer(gameTurns) {
   let currentPlayer = PLAYERS_SYMBOLS[0];
   if (gameTurns.length > 0 && gameTurns[0].player === PLAYERS_SYMBOLS[0]) {
@@ -30,17 +47,4 @@ export function deriveWinner(gameBoard, players) {
   }
 
   return winner;
-}
-
-export function deriveGameBoard(gameTurns) {
-  let gameBoard = [...INITIAL_BOARD.map((arr) => [...arr])];
-
-  for (const turn of gameTurns) {
-    const { square, player } = turn;
-    const { row, col } = square;
-
-    gameBoard[row][col] = player;
-  }
-
-  return gameBoard;
 }

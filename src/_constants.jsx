@@ -1,11 +1,15 @@
-export const playerSymbols = ["X", "O"];
+export const INITIAL_PLAYERS = {
+  X: "Joueur 1",
+  O: "Joueur 2",
+};
+export const PLAYERS_SYMBOLS = Object.keys(INITIAL_PLAYERS);
 
-export const initialBoard = [
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
-  ];
-  
+export const INITIAL_BOARD = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
+
 export const WINNING_COMBINATIONS = [
   [
     { row: 0, column: 0 },

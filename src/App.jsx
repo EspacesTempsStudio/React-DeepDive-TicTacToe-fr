@@ -4,47 +4,28 @@ import Player from "./components/Player.jsx";
 import Log from "./components/Log.jsx";
 import GameOver from "./components/GameOver.jsx";
 
-import {
-  initialBoard,
-  playerSymbols,
-  WINNING_COMBINATIONS,
-} from "./_constants";
+import { PLAYERS_SYMBOLS, INITIAL_PLAYERS } from "./_constants";
 
-function deriveActivePlayer(gameTurns) {
-  let currentPlayer = playerSymbols[0];
-  if (gameTurns.length > 0 && gameTurns[0].player === playerSymbols[0]) {
-    currentPlayer = playerSymbols[1];
-  }
-  return currentPlayer;
-}
+import {
+  deriveActivePlayer,
+  deriveGameBoard,
+  deriveWinner,
+} from "./_functions";
 
 function App() {
+  const [players, setPlayers] = useState(INITIAL_PLAYERS);
   const [gameTurns, setGameTurns] = useState([]);
   const currentPlayer = deriveActivePlayer(gameTurns);
 
-  let gameBoard = initialBoard;
-  let winner;
+  // BAD WAY TO UPDATE ARRAY
+  // IMMUTABILITY MATTERS - ALWAYS!
+  // let gameBoard = initialBoard;
+  const gameBoard = deriveGameBoard(gameTurns);
 
-  for (const turn of gameTurns) {
-    const { square, player } = turn;
-    const { row, col } = square;
+  const winner = deriveWinner(gameBoard, players);
 
-    gameBoard[row][col] = player;
-  }
+  const hasDraw = gameTurns.length === 9 && !winner;
 
-  for (const combination of WINNING_COMBINATIONS) {
-    const firstSymbol = gameBoard[combination[0].row][combination[0].column];
-    const secondSymbol = gameBoard[combination[1].row][combination[1].column];
-    const thirdSymbol = gameBoard[combination[2].row][combination[2].column];
-
-    if (
-      firstSymbol &&
-      firstSymbol === secondSymbol &&
-      secondSymbol === thirdSymbol
-    ) {
-      winner = firstSymbol;
-    }
-  }
   function handleSelectSquare(rowIndex, colIndex) {
     setGameTurns((prevTurns) => {
       const currentPlayer = deriveActivePlayer(prevTurns);
@@ -60,8 +41,15 @@ function App() {
 
   function handleResetBoard() {
     setGameTurns([]);
-    winner = undefined;
-    gameBoard = initialBoard;
+  }
+
+  function handlePlayerNameChange(symbol, newName) {
+    setPlayers((prevPlayers) => {
+      return {
+        ...prevPlayers,
+        [symbol]: newName,
+      };
+    });
   }
 
   return (
@@ -69,23 +57,26 @@ function App() {
       <div id="game-container">
         <ol id="players" className="highlight-player">
           <Player
-            name="Joueur 1"
-            symbol={playerSymbols[0]}
-            isActive={currentPlayer === playerSymbols[0]}
+            name={INITIAL_PLAYERS.X}
+            symbol={PLAYERS_SYMBOLS[0]}
+            isActive={currentPlayer === PLAYERS_SYMBOLS[0]}
+            onChangeName={handlePlayerNameChange}
           />
           <Player
-            name="Joueur 2"
-            symbol={playerSymbols[1]}
-            isActive={currentPlayer === playerSymbols[1]}
+            name={INITIAL_PLAYERS.O}
+            symbol={PLAYERS_SYMBOLS[1]}
+            isActive={currentPlayer === PLAYERS_SYMBOLS[1]}
+            onChangeName={handlePlayerNameChange}
           />
         </ol>
-        {winner && <GameOver />}
-        {!winner && (
-          <center>
-            <em>@ vous de jouer "{currentPlayer}" </em>
-            <GameBoard board={gameBoard} onSelectSquare={handleSelectSquare} />
-          </center>
+        {(winner || hasDraw) && (
+          <GameOver winner={winner} onReplay={handleResetBoard} />
         )}
+
+        <center>
+          <em>@ vous de jouer "{currentPlayer}" </em>
+          <GameBoard board={gameBoard} onSelectSquare={handleSelectSquare} />
+        </center>
       </div>
       <Log played={gameTurns} />
     </main>

@@ -1,6 +1,6 @@
 export const INITIAL_PLAYERS = {
   X: "Joueur 1",
-  O: "Joueur 2",
+  Y: "Joueur 2",
 };
 export const PLAYERS_SYMBOLS = Object.keys(INITIAL_PLAYERS);
 
